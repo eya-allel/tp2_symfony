@@ -10,6 +10,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use App\Form\ArticleType;
 
 class IndexController extends AbstractController
 {
@@ -34,33 +35,23 @@ class IndexController extends AbstractController
     }
 
     #[Route('/article/new', name: 'new_article')]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $article = new Article();
+public function new(Request $request, EntityManagerInterface $entityManager): Response
+{
+    $article = new Article();
+    $form = $this->createForm(ArticleType::class, $article);
+    $form->handleRequest($request);
+    
+    if ($form->isSubmitted() && $form->isValid()) {
+        $entityManager->persist($article);
+        $entityManager->flush();
         
-        $form = $this->createFormBuilder($article)
-            ->add('nom', TextType::class)
-            ->add('prix', NumberType::class)
-            ->add('save', SubmitType::class, [
-                'label' => 'Créer'
-            ])
-            ->getForm();
-        
-        $form->handleRequest($request);
-        
-        if ($form->isSubmitted() && $form->isValid()) {
-            $article = $form->getData();
-            
-            $entityManager->persist($article);
-            $entityManager->flush();
-            
-            return $this->redirectToRoute('article_list');
-        }
-        
-        return $this->render('articles/new.html.twig', [
-            'form' => $form->createView()
-        ]);
+        return $this->redirectToRoute('article_list');
     }
+    
+    return $this->render('articles/new.html.twig', [
+        'form' => $form->createView()
+    ]);
+}
 
     #[Route('/article/{id}', name: 'article_show')]
     public function show(EntityManagerInterface $entityManager, int $id): Response
@@ -77,34 +68,28 @@ class IndexController extends AbstractController
     }
 
     #[Route('/article/edit/{id}', name: 'edit_article')]
-    public function edit(Request $request, EntityManagerInterface $entityManager, int $id): Response
-    {
-        $article = $entityManager->getRepository(Article::class)->find($id);
-        
-        if (!$article) {
-            throw $this->createNotFoundException('Article non trouvé');
-        }
-        
-        $form = $this->createFormBuilder($article)
-            ->add('nom', TextType::class)
-            ->add('prix', NumberType::class)
-            ->add('save', SubmitType::class, [
-                'label' => 'Modifier'
-            ])
-            ->getForm();
-        
-        $form->handleRequest($request);
-        
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-            
-            return $this->redirectToRoute('article_list');
-        }
-        
-        return $this->render('articles/edit.html.twig', [
-            'form' => $form->createView()
-        ]);
+public function edit(Request $request, EntityManagerInterface $entityManager, int $id): Response
+{
+    $article = $entityManager->getRepository(Article::class)->find($id);
+    
+    if (!$article) {
+        throw $this->createNotFoundException('Article non trouvé');
     }
+    
+    $form = $this->createForm(ArticleType::class, $article);
+    $form->handleRequest($request);
+    
+    if ($form->isSubmitted() && $form->isValid()) {
+        $entityManager->flush();
+        
+        return $this->redirectToRoute('article_list');
+    }
+    
+    return $this->render('articles/edit.html.twig', [
+        'form' => $form->createView()
+    ]);
+}
+
 
     #[Route('/article/delete/{id}', name: 'delete_article')]
     public function delete(EntityManagerInterface $entityManager, int $id): Response
