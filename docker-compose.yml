@@ -9,3 +9,21 @@ services:
       - ./:/var/www/html
     ports:
       - "8000:8000"
+    depends_on:
+      - database
+
+  database:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: symfony
+      MYSQL_USER: symfony
+      MYSQL_PASSWORD: symfony
+    volumes:
+      - db-data:/var/lib/mysql
+    ports:
+      - "3307:3306"  
+    command: --default-authentication-plugin=mysql_native_password
+
+volumes:
+  db-data:
