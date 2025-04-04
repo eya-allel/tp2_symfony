@@ -27,10 +27,10 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_article_index') }}" class="btn btn-secondary">Retour à la liste</a>
-    <a href="{{ path('app_article_edit', {'id': article.id}) }}" class="btn btn-primary">Modifier</a>
+    <a href="{{ path('article_list') }}" class="btn btn-secondary">Retour à la liste</a>
+    <a href="{{ path('edit_article', {'id': article.id}) }}" class="btn btn-primary">Modifier</a>
 
-    <form method="post" action="{{ path('app_article_delete', {'id': article.id}) }}" style="display: inline-block">
+    <form method="post" action="{{ path('delete_article', {'id': article.id}) }}" style="display: inline-block">
         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ article.id) }}">
         <button class="btn btn-danger">Delete</button>
     </form>
