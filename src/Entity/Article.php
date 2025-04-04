@@ -29,6 +29,12 @@ class Article
     )]
     private ?int $prix = null;
 
+    // Dans src/Entity/Article.php
+   // Dans src/Entity/Article.php
+#[ORM\ManyToOne(inversedBy: 'articles')]
+#[ORM\JoinColumn(nullable: true, onDelete: "SET NULL")]
+private ?Category $category = null;
+
     // Getters et setters...
 
 
@@ -57,6 +63,18 @@ class Article
     public function setPrix(int $prix): static
     {
         $this->prix = $prix;
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
 
         return $this;
     }

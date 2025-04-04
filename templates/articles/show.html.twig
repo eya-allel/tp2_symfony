@@ -1,8 +1,37 @@
+{# templates/article/show.html.twig #}
 {% extends 'base.html.twig' %}
-{% block title %}{{ article.nom }}{% endblock %}
+
+{% block title %}Article{% endblock %}
+
 {% block body %}
-<h1>{{ article.nom }}</h1>
-<p>{{ article.prix }}</p>
-<hr>
-<a href="/" class="btn btn-primary">Retour</a>
+    <h1>Article</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ article.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ article.nom }}</td>
+            </tr>
+            <tr>
+                <th>Prix</th>
+                <td>{{ article.prix }}</td>
+            </tr>
+            <tr>
+                <th>Catégorie</th>
+                <td>{{ article.category.titre }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_article_index') }}" class="btn btn-secondary">Retour à la liste</a>
+    <a href="{{ path('app_article_edit', {'id': article.id}) }}" class="btn btn-primary">Modifier</a>
+
+    <form method="post" action="{{ path('app_article_delete', {'id': article.id}) }}" style="display: inline-block">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ article.id) }}">
+        <button class="btn btn-danger">Delete</button>
+    </form>
 {% endblock %}
