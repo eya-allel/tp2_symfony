@@ -1,46 +1,55 @@
-{# templates/article/index.html.twig #}
+{# templates/articles/index.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Liste des Articles{% endblock %}
 
 {% block body %}
-    {% if articles %}
-        <div class="table-responsive">
-            <table id="articles" class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Nom</th>
-                        <th>Prix</th>
-                        <th>Catégorie</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for article in articles %}
-                        <tr>
-                            <td>{{ article.nom }}</td>
-                            <td>{{ article.prix }}</td>
-                            <td>
-                                {% if article.category is not null and article.category.id is defined %}
-                                    {{ article.category.titre }}
-                                {% else %}
-                                    <span class="text-muted">Aucune catégorie</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <a href="{{ path('article_show', {'id': article.id}) }}" class="btn btn-sm btn-dark">Détails</a>
-                                <a href="{{ path('edit_article', {'id': article.id}) }}" class="btn btn-sm btn-primary">Modifier</a>
-                                <form method="post" action="{{ path('delete_article', {'id': article.id}) }}" style="display: inline-block">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ article.id) }}">
-                                    <button class="btn btn-sm btn-danger">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <h1>Recherche par Nom</h1>
+    
+    <div class="mb-4">
+        {{ form_start(form) }}
+        <div class="mb-3">
+            {{ form_widget(form.nom, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le nom'}}) }}
         </div>
+        <button type="submit" class="btn btn-success">Rechercher</button>
+        {{ form_end(form) }}
+    </div>
+    
+    {% if articles is empty %}
+        <p class="alert alert-info">Aucun article</p>
     {% else %}
-        <p>Aucun articles</p>
+        <h2>Articles</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Prix</th>
+                    <th>Catégorie</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for article in articles %}
+                    <tr>
+                        <td>{{ article.id }}</td>
+                        <td>{{ article.nom }}</td>
+                        <td>{{ article.prix }}</td>
+                        <td>
+                            {% if article.category %}
+                                {{ article.category.titre }}
+                            {% else %}
+                                <span class="text-muted">Non définie</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ path('article_show', {'id': article.id}) }}" class="btn btn-sm btn-info">Détails</a>
+                            <a href="{{ path('edit_article', {'id': article.id}) }}" class="btn btn-sm btn-primary">Modifier</a>
+                            <a href="{{ path('delete_article', {'id': article.id}) }}" class="btn btn-sm btn-danger">Supprimer</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     {% endif %}
 {% endblock %}
